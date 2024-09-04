@@ -1,0 +1,10 @@
+const PROCESS_STATUS = {
+    PENDING: "PENDING",
+    PROCESSING: "PROCESSING",
+    SUCCESS: "SUCCESS",
+    FAILED: "FAILED",
+};
+
+module.exports = {
+    PROCESS_STATUS,
+};

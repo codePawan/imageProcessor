@@ -1,0 +1,116 @@
+Technical Design Document
+Overview
+The Image Processor application is a system that processes images based on data provided in a CSV file. The application handles the following tasks:
+
+Receiving and validating CSV files.
+Asynchronously processing images using the sharp library.
+Storing processed image data in a MySQL database.
+Providing endpoints for status checks and webhook notifications.
+Components
+1. API Server
+Description
+The API server is built using Express.js and serves as the central component for handling client requests, managing file uploads, and routing to appropriate controllers.
+
+Responsibilities
+Parse incoming requests and route them to appropriate handlers.
+Handle file uploads using multer.
+Expose endpoints for image processing and status checks.
+Integrate with webhook notifications.
+Key Files
+app.js: Main entry point for the application that initializes the Express server and sets up middleware and routes.
+2. Controllers
+Controllers handle the business logic and route requests to appropriate services. They manage the interactions between HTTP requests and the underlying service logic.
+
+2.1 Image Controller (controllers/imageController.js)
+Description
+Manages routes related to image processing and status checks.
+
+Responsibilities
+Handle file uploads and initiate CSV processing.
+Validate the CSV format.
+Start image processing using data from the CSV file.
+Provide endpoints to check the status of image processing requests.
+Endpoints
+POST /api/upload: Accepts CSV files, validates them, and starts processing.
+GET /api/status/:requestId: Retrieves the status of image processing based on requestId.
+2.2 Webhook Controller (controllers/webhookController.js)
+Description
+Handles webhook notifications.
+
+Responsibilities
+Receive and process webhook notifications.
+Log incoming webhook data.
+Endpoints
+POST /api/webhook: Receives notifications related to image processing status updates.
+3. Services
+Services encapsulate the business logic and interact with the database and external systems.
+
+3.1 Image Service (services/imageService.js)
+Description
+Handles image processing and CSV file processing logic.
+
+Responsibilities
+Fetch and process images using the sharp library.
+Store image processing results and links in the database.
+Update image processing status in the database.
+Validate and process CSV files.
+Functions
+processImage(url, requestId, productCode): Processes individual images and saves the results.
+processCSV(filePath, requestId): Parses and processes CSV files.
+getRequestStatus(requestId): Retrieves the status of a request from the database.
+3.2 CSV Service (services/csvService.js)
+Description
+Handles CSV file validation and data persistence.
+
+Responsibilities
+Validate the format of the CSV files.
+Save image details and links to the database.
+Update the status of image processing tasks.
+Functions
+validateCSVFormat(filePath): Validates the format of the CSV file.
+saveImageDetails(productCode, requestId, serialNo, status): Saves image details to the database.
+saveImageLink(productCode, requestId, unprocessedUrl, processedUrl): Saves image links to the database.
+updateAllProductDetailsStatusToFailed(requestId): Updates the status of all products to failed.
+updateImageDetailsStatus(requestId, productCode, status): Updates the status of specific image details.
+4. Database
+The database stores information related to image processing tasks and their results.
+
+Description
+A MySQL database is used to store image details, links, and processing status.
+
+Tables
+ProductImageDetails: Stores details of images including request ID, product code, serial number, and status.
+ProductImageLinks: Stores links to unprocessed and processed images.
+Configuration
+db.js: Configures and exports a MySQL connection pool for database interactions.
+5. File Storage
+Description
+The file storage is used for temporarily storing uploaded CSV files and images.
+
+Implementation
+uploads/: Directory where files are stored temporarily during processing.
+6. Webhook Integration
+Description
+Allows for asynchronous notifications about the status of image processing tasks.
+
+Implementation
+The webhookController.js receives POST requests containing status updates.
+The server responds with a confirmation of receipt.
+Workflow
+File Upload and Processing
+
+A client uploads a CSV file via the /api/upload endpoint.
+The file is validated, and the image processing begins.
+Images are processed asynchronously, and their details are stored in the database.
+Status Check
+
+Clients can check the status of their processing requests using the /api/status/:requestId endpoint.
+Webhook Notification
+
+The server can send webhook notifications to external systems about the status of image processing.
+Error Handling
+File Upload Errors: Handled by returning a 400 Bad Request if no file is uploaded.
+CSV Processing Errors: Handled by returning a 500 Internal Server Error with details of the error.
+Database Errors: Handled by returning a 500 Internal Server Error with details of the database interaction issues.
+Conclusion
+This design document provides a comprehensive overview of the Image Processor application, detailing each component's role, responsibilities, and interactions. It sets the foundation for implementing and maintaining the application effectively.
