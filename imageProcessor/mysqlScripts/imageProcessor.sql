@@ -11,7 +11,9 @@ create table product_image_details(
     unProcessedUrl JSON ,
     processedUrl JSON, 
     status ENUM('PENDING', 'PROCESSING', 'SUCCESS', 'FAILED') DEFAULT 'PENDING'
-)
+);
+CREATE INDEX idx_requestId_productCode ON product_image_details(requestId, productCode);
+
 
 
 
