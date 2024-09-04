@@ -10,7 +10,7 @@ create table product_image_details(
     serialNo VARCHAR(255),
     unProcessedUrl JSON ,
     processedUrl JSON, 
-    status ENUM('Pending', 'Processing', 'Completed') DEFAULT 'Pending'
+    status ENUM('PENDING', 'PROCESSING', 'SUCCESS', 'FAILED') DEFAULT 'PENDING'
 )
 
 
